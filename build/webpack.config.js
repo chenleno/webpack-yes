@@ -32,7 +32,7 @@ module.exports = env => {
       rules: [
         {
           test: /\.vue$/,
-          use: [{
+          use: ['cache-loader', {
             loader: 'vue-loader',
             options: {
               compilerOptions: {
@@ -43,7 +43,7 @@ module.exports = env => {
           exclude: '/node_modules/'
         }, {
           test: /\.(le|c)ss$/,
-          use: [
+          use: ['cache-loader',
             {
               loader: DEV_MODE ? 'vue-style-loader' : MiniCssExtractPlugin.loader,
               options: {
@@ -62,7 +62,7 @@ module.exports = env => {
           exclude: '/node_modules/'
         }, {
           test: imgReg, // 图片文件
-          use: [
+          use: ['cache-loader',
             {
               loader: 'url-loader',
               options: {
@@ -106,7 +106,8 @@ module.exports = env => {
       new HappyPack({
         id: 'happyBabel',
         threadPool: happyThreadPool,
-        loaders: [{
+        loaders: ['cache-loader',
+        {
           loader: 'babel-loader',
           options: {
             presets: ['@babel/preset-env'],
@@ -114,9 +115,6 @@ module.exports = env => {
           }
         }]
       }),
-      new webpack.DllReferencePlugin({
-        manifest: require('./vendor-manifest.json')
-      }), 
       
       /**
        * happypack 和 miniExtractCssPlugin不兼容，和 postcss-loader 一起也会报错

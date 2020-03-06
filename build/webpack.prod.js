@@ -18,6 +18,9 @@ module.exports = webpackMerge(webpackConfig('production'), {
     new CopyWebpackPlugin([{
       from: 'index.html',
     }]),
+    new webpack.DllReferencePlugin({
+      manifest: require('./vendor-manifest.json')
+    }), 
     new CopyWebpackPlugin([{
       from: 'static', to: 'static' // copy生成的vendor文件到{output}目录中
     }])
