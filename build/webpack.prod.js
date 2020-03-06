@@ -7,6 +7,7 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const paths = require('../config/paths')
 const path = require('path')
 const parallelUglifyPlugin = require('webpack-parallel-uglify-plugin')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 module.exports = webpackMerge(webpackConfig('production'), {
   mode: 'production',
@@ -23,7 +24,11 @@ module.exports = webpackMerge(webpackConfig('production'), {
     }), 
     new CopyWebpackPlugin([{
       from: 'static', to: 'static' // copy生成的vendor文件到{output}目录中
-    }])
+    }]),
+    new BundleAnalyzerPlugin({
+      analyzerHost: '127.0.0.1',
+      analyzerPort: 8899
+    })
   ],
   optimization: {
     minimizer: [

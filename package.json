@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config build/webpack.prod.js",
     "dev": "webpack-dev-server --config build/webpack.dev.js --open",
-    "dll": "webpack --config build/webpack.dll.config.js"
+    "dll": "webpack --config build/webpack.dll.config.js",
+    "analyze": "NODE_ENV=production npm_config_report=true npm run build"
   },
   "repository": {
     "type": "git",
@@ -47,6 +48,7 @@
     "vue-style-loader": "^4.1.2",
     "vue-template-compiler": "^2.6.11",
     "webpack": "^4.41.6",
+    "webpack-bundle-analyzer": "^3.6.0",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3",
     "webpack-merge": "^4.2.2",
