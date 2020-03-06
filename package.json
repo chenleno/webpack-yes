@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/chenleno/webpack-yes.git"
+    "url": "git@github.com:chenleno/webpack-yes.git"
   },
   "keywords": [
     "webpack"
