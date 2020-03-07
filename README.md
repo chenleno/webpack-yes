@@ -1,6 +1,4 @@
-# webpack-yes
-纯手工配置webpack，解析vue项目
-
+# webpack
 ## 核心四个概念
 - 入口 entry (指示 webpack 应该使用哪个模块，来作为构建其内部依赖图的开始)
 - 输出 output (告诉 webpack 在哪里输出它所创建的 bundles，以及如何命名这些文件)
@@ -19,7 +17,7 @@ import './index.less' // 在js中直接import less 文件便是webpack的能力
   + minimize 
   + minimizer // 使用压缩工具覆盖默认压缩
   + splitChunks // 代码分块策略
-
+- externals // 使用cdn等库时的配置
 ## 常用loader
 - style-loader, css-loader, postcss-loader, less-loader... // 样式解析loader
 - file-loader, url-loader // 文件处理loader
@@ -43,7 +41,15 @@ import './index.less' // 在js中直接import less 文件便是webpack的能力
 ## 优化相关
 - happypack // 将解析loader的工作分发给每一个进程，执行完后再汇总
 - webpack-parallel-uglify-plugin // 优化代码压缩时间 （和happypack功能类似）
-- 抽取第三方模块
+- webpack.DllPlugin // 抽取第三方模块
+- cache-loader // 用于缓存编译文件内容
+- webpack-bundle-analyzer // 生成打包分析图
+
+## loader 编写原则
+- 单一原则: 每个 Loader 只做一件事；
+- 链式调用: Webpack 会按顺序链式调用每个 Loader；
+- 统一原则: 遵循 Webpack 制定的设计规则和结构，输入与输出均为字符串，各个 Loader 完全独立，即插即用；
+
 
 ## 配置示例
 ```javascript
@@ -53,6 +59,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const vueLoaderPlugin = require('vue-loader/lib/plugin')
 const HappyPack = require('happypack')
 const os = require('os')
+const WebpackAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 // 开辟一个线程池
 // 拿到系统CPU的最大核数，happypack 将编译工作灌满所有进程
@@ -70,7 +77,7 @@ const happyPackThreadPool = HappyPack.ThreadPool({ size: os.cpus().length })
     rules: [
       {
         test: /\.(le|c)ss$/,
-        use: [
+        use: ['cache-loader',
           MiniCssExtractPlugin.loader, // mini-css-extract-plugin loader 和 style-loader 冲突，故只保留一个
           'css-loader', 'less-loader'
         ]
@@ -121,12 +128,19 @@ const happyPackThreadPool = HappyPack.ThreadPool({ size: os.cpus().length })
       id: 'happyJs',
       threadPool: happyPackThreadPool,
       loaders: [...]
+    }),
+    new WebpackAnalyzerPlugin({
+      analyzerHost: '127.0.0.1',
+      analyzerPort: 8899
     })
   ],
   optimization: {
     minimizer: [
       new UglifyPlugin(...)
     ]
+  },
+  externals: {
+    'jquery': 'jQuery'
   }
 }
 ```

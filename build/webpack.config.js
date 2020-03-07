@@ -43,7 +43,7 @@ module.exports = env => {
           exclude: '/node_modules/'
         }, {
           test: /\.(le|c)ss$/,
-          use: ['cache-loader',
+          use: [
             {
               loader: DEV_MODE ? 'vue-style-loader' : MiniCssExtractPlugin.loader,
               options: {
@@ -110,10 +110,10 @@ module.exports = env => {
         {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env'],
+            presets: ['@babel/preset-env', { modules: false }], // modules: false  开启tree-shaking时使用
             cacheDirectory: true
           }
-        }]
+        }],
       }),
       
       /**
@@ -127,6 +127,9 @@ module.exports = env => {
       //     'less-loader'
       //   ]
       // })
-    ]
+    ],
+    externals: {
+      jquery: 'jQuery' // 使用cdn的jquery
+    }
   }
 }
