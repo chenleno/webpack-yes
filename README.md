@@ -50,6 +50,38 @@ import './index.less' // 在js中直接import less 文件便是webpack的能力
 - 链式调用: Webpack 会按顺序链式调用每个 Loader；
 - 统一原则: 遵循 Webpack 制定的设计规则和结构，输入与输出均为字符串，各个 Loader 完全独立，即插即用；
 
+## 踩坑
+### output.libraryTarget
+此坑在编写工具库项目DIO时遇到，该项目基于webpack打包。但是在使用模块方式引入包文件时却无法获取到打包的内容。
+```javascript
+// @lenochen/dio
+// index.js 工具库项目DIO打包入口
+const a = require('./a.js')
+module.exports = { a }
+
+// usecase 使用DIO的另一个项目
+// npm i @lenochen/dio
+import { a } from '@lenochen/dio'
+console.log(a) // undefined
+```
+经调查发现问题出在DIO项目webpack配置的output的参数上
+```javascript
+// @lenochen/dio
+// webpack.config.js
+{
+  ...,
+  output: {
+    filename: 'index.bundle.js',
+    path: 'dist',
+    // ++++
+    libraryTarget: 'commonjs2' // 增加此参数后，打包文件便可以使用模块化方式引入
+    // ++++
+  },
+  ...
+}
+```
+详细libraryTarget配置解析见
+[output.libraryTarget](https://webpack.docschina.org/configuration/output/#output-librarytarget)
 
 ## 配置示例
 ```javascript
@@ -69,7 +101,8 @@ const happyPackThreadPool = HappyPack.ThreadPool({ size: os.cpus().length })
   entry: ['babel/polyfill', ...],
   output: {
     path: path.resolve(__dirname, '../dist'),
-    filename: 'js/[name].[hash:8].js'
+    filename: 'js/[name].[hash:8].js',
+    libraryTarget: 'commonjs2'
   }
   ...,
   module: {
