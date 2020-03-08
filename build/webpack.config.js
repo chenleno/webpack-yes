@@ -93,8 +93,14 @@ module.exports = env => {
       },
       extensions: ['*', '.js', '.json', '.vue'] // 自动解析确定的扩展，导入文件时可以不带扩展
     },
-    plugins: [
+    plugins: [  
       new CleanWebpackPlugin(),
+      new webpack.DllReferencePlugin({
+        manifest: require('./vendor-manifest.json')
+      }), 
+      new CopyWebpackPlugin([{
+        from: 'static', to: 'static' // copy生成的vendor文件到{output}目录中
+      }]),
       new HtmlWebpackPlugin({
         template: paths.resolvePath('index.html')
       }),
@@ -110,12 +116,12 @@ module.exports = env => {
         {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env', { modules: false }], // modules: false  开启tree-shaking时使用
+            presets: ['@babel/preset-env'], // modules: false  开启tree-shaking时使用
             cacheDirectory: true
           }
         }],
       }),
-      
+    
       /**
        * happypack 和 miniExtractCssPlugin不兼容，和 postcss-loader 一起也会报错
        */
